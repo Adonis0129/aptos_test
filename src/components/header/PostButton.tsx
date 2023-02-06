@@ -102,6 +102,7 @@ function PostButton() {
 
     const handlePost = async () => {
         await web3?.post(title, content);
+        setOpen(false);
     }
 
     return (

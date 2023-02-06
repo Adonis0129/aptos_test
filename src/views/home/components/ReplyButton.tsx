@@ -73,6 +73,7 @@ function ReplyButton(props: {postId: number}) {
 
     const handleReply = async () => {
         await web3?.reply(props.postId, content);
+        setOpen(false);
     }
 
     return (

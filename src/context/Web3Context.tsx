@@ -130,16 +130,14 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
 
 
     const getAllData = async () => {
-        try {
+
             const resOfResource = await client.getAccountResources(codeChallenge);
             const data = resOfResource.find((item) => (item.type === `${codeChallenge}::vote::Posts`) )
 
             const result: IPost[] = [];
-
             if(data){
                 const postsData = data?.data as {posts: {length: number}};
-                // console.log('postsData', postsData)
-                // console.log('postsData-length', postsData.posts.length)
+
                 for(var i=0; i<postsData.posts.length; i++){
                     let _repliesData: IReply[] = [];
                     let _postData : IPost= {
@@ -153,14 +151,13 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
                     }
 
                     const post = postsData.posts[i];
-                    // console.log("post", post)
-                    // console.log('reply-length', post.replies.length)
                     _postData.title = post.title;
                     _postData.content = post.content;
                     _postData.poster = post.poster;
                     _postData.postTime = post.postTime;
                     _postData.count_like = post.count_like;
                     _postData.count_unlike = post.count_unlike;
+
                     for(var j=0; j<post.replies.length; j++){
                         let _replyData: IReply = {
                             content: "",
@@ -171,7 +168,6 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
                         };
                         
                         const reply = post.replies[j];
-                        // console.log("reply", reply)
                         _replyData.content = reply.content;
                         _replyData.count_like = reply.count_like;
                         _replyData.count_unlike = reply.count_unlike;
@@ -180,19 +176,11 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
 
                         _postData.replies.push(_replyData)
                     }
-
-                    // console.log('_postData', _postData)
                     result.push(_postData);
-
                 }
                 setPosts(result)
-                // console.log("posts", posts)
-
             }
-        }
-        catch(e){
-            console.log(e);
-        }
+
     }
 
     useEffect(()=>{
@@ -201,18 +189,13 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
 
 
     const getUserInfo = async () => {
-        if(!address) return;
+            if(!address) return;
             const resOfAccount = await client.getAccountResources(address);
-            // console.log("resOfAccount", resOfAccount)
             const data = resOfAccount.find((item) => (item.type === `${codeChallenge}::vote::Votes`))
-            // console.log("getuserInfo-data", data)
-
             const result: IUserVoteStatus[] = [];
-
             if(data){
                 const votesData = data?.data as {votes: {length: number}};
-                // console.log("votesData", votesData);
-                // console.log("votesData.length", votesData.votes.length)
+
                 for(var i=0; i<votesData.votes.length; i++){
                     let _vote: IUserVoteStatus = {
                         isClickPost: true,
@@ -222,7 +205,6 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
                         status_unlike: false
                     }
                     const vote = votesData.votes[i];
-                    // console.log("vote", vote)
                     _vote.isClickPost = vote.isClickPost;
                     _vote.postId = vote.postId;
                     _vote.replyId = vote.replyId;
@@ -231,17 +213,14 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
 
                     result.push(_vote)
                 }
-                // console.log("votes-result", result)
-                setUserVotes(result);
+                setUserVotes(result)
             }
-
-            
     }
+
 
     useEffect(()=>{
         getUserInfo();
     }, [address])
-
 
     const post = async (title: string, content: string) => {
 
@@ -282,7 +261,7 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
             }
 
             toast.success("Posted successfully!", {theme:'colored'});
-            sleep(2);
+            await sleep(2);
             await getAllData();
             await getUserInfo();
         }
@@ -331,7 +310,7 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
             }
 
             toast.success("Replyed successfully!", {theme:'colored'});
-            sleep(2);
+            await sleep(2);
             await getAllData();
             await getUserInfo();
             }
@@ -343,6 +322,8 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
 
 
     const vote = async (isClickPost:boolean, postId: number, replyId: number, like: boolean, unlike: boolean) => {
+
+        console.log("vote-console", isClickPost, postId, replyId, like, unlike)
 
         if (wallet === '' || !isConnected) {
             toast.warning("please connect wallet", {theme:'colored'});
@@ -381,10 +362,9 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
             }
 
             toast.success("Voted successfully!", {theme:'colored'});
-            sleep(2);
+            await sleep(2);
             await getAllData();
             await getUserInfo();
-
         }
         catch(e){
             console.log(e)

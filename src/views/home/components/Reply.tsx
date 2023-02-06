@@ -101,17 +101,15 @@ function Reply(props: IPros) {
 
     useEffect(()=>{
         if(userVotesData){
-            // console.log("userVotesData", userVotesData)
-
             const data = userVotesData.find((vote) => (vote.isClickPost === false && vote.postId === String(postId) && vote.replyId === String(replyId)) )
-            console.log("reply-user vote data", data)
+            console.log("reply-user-data-console", data)
             if(data){
                 setStatusLike(data.status_like);
                 setStatusUnlike(data.status_unlike);
             }
         }
 
-    },[userVotesData])
+    },[userVotesData, postId, replyId])
 
     return (
             <Box className={classes.root}>

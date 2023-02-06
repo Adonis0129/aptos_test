@@ -123,17 +123,15 @@ function Post(props: IProps) {
 
     useEffect(()=>{
         if(userVotesData){
-            // console.log("userVotesData", userVotesData)
-
             const data = userVotesData.find((vote) => (vote.isClickPost === true && vote.postId === String(postId)) )
-            console.log("post-vote-data", data)
+            console.log("post-user-vote-console", data)
             if(data){
                 setStatusLike(data.status_like);
                 setStatusUnlike(data.status_unlike);
             }
         }
 
-    },[web3?.address])
+    },[userVotesData, postId])
 
     return (
             <Box className={classes.root}>
