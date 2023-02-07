@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect, useState, createContext } from 'react'
+import React, { ReactNode, useEffect, useState, createContext, useCallback } from 'react'
 import { codeChallenge } from '../config/resource';
 import { toast } from 'react-toastify';
 import { IPost } from '../views/home/components/Post'
@@ -62,7 +62,7 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
         } else {
             setAddress(null);
         }
-    }, [isConnected, wallet]);
+    }, [isConnected, wallet, address]);
 
     // update connection
     useEffect(() => {
@@ -74,13 +74,13 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
         try {
             if (wallet === 'petra') {
                 if ('aptos' in window) await window.aptos.connect();
-                //  else window.open('https://petra.app/', `_blank`);
+                //  else window.open('https://petra.app/', '_blank');
             } else if (wallet === 'martian') {
                 if ('martian' in window) await window.martian.connect();
                 // else window.open('https://www.martianwallet.xyz/', '_blank');
             } else if (wallet === 'pontem') {
                 if ('pontem' in window) await window.pontem.connect();
-                // else window.open('https://petra.app/', `_blank`);
+                // else window.open('https://petra.app/', '_blank');
             }
             setWallet(wallet);
             checkIsConnected(wallet);
@@ -188,7 +188,7 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
     }, [])
 
 
-    const getUserInfo = async () => {
+    const getUserInfo = useCallback( async () => {
             if(!address) return;
             const resOfAccount = await client.getAccountResources(address);
             const data = resOfAccount.find((item) => (item.type === `${codeChallenge}::vote::Votes`))
@@ -215,12 +215,16 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
                 }
                 setUserVotes(result)
             }
-    }
+            else{
+                setUserVotes(undefined)
+            }
+        }, [address])
 
 
     useEffect(()=>{
+        // console.log("userVotes", userVotes)
         getUserInfo();
-    }, [address])
+    },[address, wallet, isConnected, getUserInfo, userVotes]);
 
     const post = async (title: string, content: string) => {
 

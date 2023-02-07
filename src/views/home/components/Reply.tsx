@@ -96,20 +96,26 @@ function Reply(props: IPros) {
     }
 
     const userVotesData = web3?.userVotes;
+    const account = web3?.address;
+    const isConnected = web3?.isConnected;
     const [statusLike, setStatusLike] = useState(false);
     const [statusUnlike, setStatusUnlike] = useState(false);
 
     useEffect(()=>{
         if(userVotesData){
             const data = userVotesData.find((vote) => (vote.isClickPost === false && vote.postId === String(postId) && vote.replyId === String(replyId)) )
-            console.log("reply-user-data-console", data)
+            // console.log("reply-user-data-console", data)
             if(data){
                 setStatusLike(data.status_like);
                 setStatusUnlike(data.status_unlike);
             }
         }
+        else{
+            setStatusLike(false);
+            setStatusUnlike(false);
+        }
 
-    },[userVotesData, postId, replyId])
+    },[userVotesData, postId, replyId, account, isConnected])
 
     return (
             <Box className={classes.root}>

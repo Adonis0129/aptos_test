@@ -118,20 +118,26 @@ function Post(props: IProps) {
     }
 
     const userVotesData = web3?.userVotes;
+    const account = web3?.address;
+    const isConnected = web3?.isConnected;
     const [statusLike, setStatusLike] = useState(false);
     const [statusUnlike, setStatusUnlike] = useState(false);
 
     useEffect(()=>{
         if(userVotesData){
             const data = userVotesData.find((vote) => (vote.isClickPost === true && vote.postId === String(postId)) )
-            console.log("post-user-vote-console", data)
+            // console.log("post-user-vote-console", data)
             if(data){
                 setStatusLike(data.status_like);
                 setStatusUnlike(data.status_unlike);
             }
         }
+        else{
+            setStatusLike(false);
+            setStatusUnlike(false);
+        }
 
-    },[userVotesData, postId])
+    },[userVotesData, postId, account, isConnected])
 
     return (
             <Box className={classes.root}>
